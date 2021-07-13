@@ -1,11 +1,26 @@
 import React, { useEffect } from 'react';
+import styled from 'styled-components';
 import { connect } from 'react-redux';
 import ToDoListItem from './ToDoListItem';
 import NewToDoForm from './NewToDoForm';
-import { loadToDos, removeToDoRequest, markToDoAsCompletedRequest } from './thunks'
-import './ToDoList.css';
+import {
+    loadToDos,
+    removeToDoRequest,
+    markToDoAsCompletedRequest
+} from './thunks'
+import {
+    getToDosLoading,
+    getIncompleteToDos,
+    getCompleteToDos
+} from './selectors';
 
-const ToDoList = ({ todos = [], onRemovePressed, onCompletedPressed, isLoading, startLoadingTodos }) => {
+
+const ListWrapper = style.div`
+    max-width: 700px;
+    margin: auto;
+`;
+
+const ToDoList = ({ incompleteToDos = [], completeToDos = [], onRemovePressed, onCompletedPressed, isLoading, startLoadingTodos }) => {
 
     useEffect(() => {
         startLoadingTodos();
@@ -13,20 +28,27 @@ const ToDoList = ({ todos = [], onRemovePressed, onCompletedPressed, isLoading, 
 
     const loadingMessage = <div>Loading ToDos...</div>
     const content = (
-        <div className="list-wrapper">
+        <ListWrapper>
             <NewToDoForm />
-            {todos.map((todo, index) =>
+            <h3>Incomplete</h3>
+            {incompleteToDos.map((todo, index) =>
                 <ToDoListItem key={index} todo={todo}
                     onRemovePressed={onRemovePressed}
                     onCompletedPressed={onCompletedPressed} />)}
-        </div>
+            <h3>Completed</h3>
+            {completeToDos.map((todo, index) =>
+                <ToDoListItem key={index} todo={todo}
+                    onRemovePressed={onRemovePressed}
+                    onCompletedPressed={onCompletedPressed} />)}
+        </ListWrapper>
     );
     return isLoading ? loadingMessage : content;
 };
 
 const mapStateToProps = state => ({
-    todos: state.todos,
-    isLoading: state.isLoading
+    completeToDos: getCompleteToDos(state),
+    incompleteToDos: getIncompleteToDos(state),
+    isLoading: getToDosLoading(state)
 });
 
 const mapStateToDispatch = dispatch => ({
