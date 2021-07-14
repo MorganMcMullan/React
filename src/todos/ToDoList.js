@@ -15,7 +15,7 @@ import {
 } from './selectors';
 
 
-const ListWrapper = style.div`
+const ListWrapper = styled.div`
     max-width: 700px;
     margin: auto;
 `;
